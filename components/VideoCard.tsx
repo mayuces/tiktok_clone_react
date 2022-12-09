@@ -28,12 +28,19 @@ const VideoCard:NextPage<IProps> = ({ post }) => {
       setPlaying(true);
     }
   };
+
+  useEffect(() => {
+    if (videoRef?.current) {
+      videoRef.current.muted = isVideoMuted;
+    }
+
+  }, [isVideoMuted]);
   
   return (
     <div className='flex flex-col border-b-2 border-gray-200 pb-6'>
       <div>
         <div className='flex gap-3 p-2 cursor-pointer font-semibold rounded'>
-          <div className='md:w-16 md:h-16 2-10 h-10'>
+          <div className='md:w-12 md:h-12 w-8 h-8'>
             <Link href='/'>
               <>
                 <Image 
@@ -48,7 +55,7 @@ const VideoCard:NextPage<IProps> = ({ post }) => {
             </Link>
           </div>
           <Link href='/'>
-            <div className='flex items-center gap-2'>
+            <div className='flex flex-col gap-2'>
               <p className='flex gap-2 items-center md:text-md font-bold text-primary'>
                 {post.postedBy.userName} {` `}
                 <GoVerified className='text-blue-400 text-md' />
@@ -66,12 +73,12 @@ const VideoCard:NextPage<IProps> = ({ post }) => {
           onMouseEnter={() => setIsHover(true)}
           onMouseLeave={() => setIsHover(false)}
         >
-          <Link href='/'>
+          <Link href={`/detail/${post._id}`}>
             <video
               src={post.video.asset.url}
               loop
               ref={videoRef}
-              className='lg:w[600px] h-[300px] md:h-[400px] lg:h-[530px] w-[200px] rounded-2xl cursor-pointer bg-gray-100'
+              className='lg:w-[600px] h-[300px] md:h-[400px] lg:h-[530px] w-[200px] rounded-2xl cursor-pointer bg-gray-100'
             >
             </video>
           </Link>
