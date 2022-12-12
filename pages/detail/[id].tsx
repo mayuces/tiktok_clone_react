@@ -22,6 +22,8 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
   const [post, setPost] = useState(postDetails);
   const [playing, setPlaying] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
+  const [comment, setComment] = useState('');
+  const [isPostingComment, setIsPostingComment] = useState(false);
   const router = useRouter();
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -56,6 +58,24 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
       setPost({ ...post, likes: data.likes });
     }
   }
+
+  const addComment = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    if(userProfile && comment) {
+      setIsPostingComment(true);
+
+      const { data } = await axios.put(`${BASE_URL}/api/post/${post._id}`, {
+        userId: userProfile._id,
+        comment
+      });
+
+      setPost({ ...post, comments: data.comments});
+      setComment('');
+      setIsPostingComment(false);
+    }
+
+  };
 
   if (!post) {
     return null;
@@ -134,10 +154,10 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
             </div>
             <Link href='/'>
               <div className='flex flex-col gap-2'>
-                <p className='flex gap-2 items-center md:text-md font-bold text-primary'>
+                <div className='flex gap-2 items-center md:text-md font-bold text-primary'>
                   {post.postedBy.userName} {` `}
                   <GoVerified className='text-blue-400 text-md' />
-                </p>
+                </div>
                 <p className='capitalize font-medium text-xs text-gray-500 hidden md:block'>
                   {post.postedBy.userName}
                 </p>
@@ -157,7 +177,13 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
             />
           )}
         </div>
-        <Comments />
+        <Comments
+          comment={comment}
+          setComment={setComment}
+          addComment={addComment}
+          comments={post.comments}
+          isPostingComment={isPostingComment}
+        />
       </div>
     </div>
   )
