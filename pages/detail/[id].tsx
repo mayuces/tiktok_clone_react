@@ -26,7 +26,7 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { userProfile } = useAuthStore();
+  const { userProfile }: any = useAuthStore();
 
   const onVideoClick = () => {
     if (playing) {
@@ -44,6 +44,18 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
     }
     
   }, [post, isVideoMuted]);
+
+  const handelLike = async (like:boolean) => {
+    if (userProfile) {
+      const { data } = await axios.put(`${BASE_URL}/api/like`, {
+        userId: userProfile._id,
+        postId: post._id,
+        like
+      })
+
+      setPost({ ...post, likes: data.likes });
+    }
+  }
 
   if (!post) {
     return null;
@@ -138,7 +150,11 @@ const Detail: NextPage<IProps> = ({ postDetails }) => {
         </p>
         <div className='mt-10 px-10'>
           {userProfile && (
-            <LikeButton />
+            <LikeButton 
+              likes={post.likes}
+              handelLike={() => handelLike(true)}
+              handelDislike={() => handelLike(false)}
+            />
           )}
         </div>
         <Comments />
