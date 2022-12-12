@@ -6,6 +6,7 @@ import { GoVerified } from 'react-icons/go'
 import useAuthStore from '../store/authStore'
 import NoResults from './NoResults'
 import { NextPage } from 'next'
+import { IUser } from '../types'
 
 interface IProps {
   comment: string,
@@ -29,7 +30,7 @@ const Comments: NextPage<IProps> = ({
   comments, 
   isPostingComment
 }) => {
-  const { userProfile } = useAuthStore();
+  const { userProfile, allUsers } = useAuthStore();
 
   return (
     <div 
@@ -38,7 +39,45 @@ const Comments: NextPage<IProps> = ({
     >
       <div className='overflow-scroll lg:h-[475px]'>
         {comments?.length ? (
-          <div>videos</div>
+          comments.map((item, idx) => (
+            <>
+              {allUsers.map((user: IUser) => (
+                user._id === (item.postedBy._id || item.postedBy._ref) && (
+                  <div className='p-2 items-center' key={idx}>
+                    <Link href={`/profile/${user._id}`}>
+                      <div className='flex items-start gap-3'>
+                        <div className='w-8 h-8'>
+                          <Image
+                            src={user.image}
+                            width={34}
+                            height={34}
+                            className='rounded-full'
+                            alt='user profile'
+                            layout='responsive'
+                          />
+                        </div>
+                        <div className='hidden xl:block'>
+                          <p 
+                            className='flex gap-1 items-center text-md font-bold text-primary
+                              lowecase'
+                          >
+                            {user.userName.replaceAll(' ','')}
+                            <GoVerified className='text-blue-400'/>
+                          </p>
+                          <p className='capitilize text-gray-400 text-xs'>
+                            {user.userName}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                    <div>
+                      <p>{item.comment}</p>
+                    </div>
+                  </div>
+                )
+              ))}
+            </>
+          ))
         ) : (
           <NoResults text='No comments yet!' />
         )}
