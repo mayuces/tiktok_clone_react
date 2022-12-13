@@ -24,8 +24,18 @@ const Home: NextPage<IProps> = ({ videos }) => {
   )
 }
 
-export const getServerSideProps = async () => {
-  const response = await axios.get(`${BASE_URL}/api/post`);
+export const getServerSideProps = async ({
+  query: { topic }
+} : {
+  query: { topic : string}
+}) => {
+  let response = null;
+
+  if (topic) {
+    response = await axios.get(`${BASE_URL}/api/discover/${topic}`);
+  } else {
+    response = await axios.get(`${BASE_URL}/api/post`);
+  }
 
   return {
     props: { videos: response.data },
